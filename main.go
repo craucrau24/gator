@@ -10,6 +10,7 @@ func main() {
 	cfgData, err := config.Read()
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	fmt.Printf("database url: %s", cfgData.DbUrl)
+	fmt.Printf("database url: %s\n", cfgData.DbUrl)
 }
