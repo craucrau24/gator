@@ -1,11 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/craucrau24/gator/internal/cli"
 	"github.com/craucrau24/gator/internal/config"
+	"github.com/craucrau24/gator/internal/database"
 )
 
 func main() {
@@ -15,7 +17,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	state := cli.State{Config: &cfgData}
+	db, err := sql.Open("postgres", cfgData.DbUrl)
+	dbQueries := database.New(db)
+
+	state := cli.State{Config: &cfgData, DB: dbQueries}
 	cmds := cli.NewCommands()
 	cmds.Init()
 
