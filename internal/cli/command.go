@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/craucrau24/gator/internal/database"
+	"github.com/craucrau24/gator/internal/rss"
 	"github.com/google/uuid"
 )
 
@@ -79,5 +80,15 @@ func handlerReset(s *State, cmd Command) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func handlerAgg(s *State, cmd Command) error {
+	url := "https://www.wagslane.dev/index.xml"
+	rss, err := rss.FetchFeed(context.Background(), url)
+	if err != nil {
+		return nil
+	}
+	fmt.Println(rss)
 	return nil
 }

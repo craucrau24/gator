@@ -27,4 +27,5 @@ func (c *Commands) Init() {
 	c.Register("register", handlerRegister)
 	c.Register("reset", handlerReset)
 	c.Register("users", handlerUsers)
+	c.Register("agg", handlerAgg)
 }
