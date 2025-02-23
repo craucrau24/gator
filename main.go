@@ -8,6 +8,7 @@ import (
 	"github.com/craucrau24/gator/internal/cli"
 	"github.com/craucrau24/gator/internal/config"
 	"github.com/craucrau24/gator/internal/database"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 	}
 
 	db, err := sql.Open("postgres", cfgData.DbUrl)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	dbQueries := database.New(db)
 
 	state := cli.State{Config: &cfgData, DB: dbQueries}

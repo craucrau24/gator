@@ -24,4 +24,6 @@ func (c *Commands) Run(state *State, cmd Command) error {
 
 func (c *Commands) Init() {
 	c.Register("login", handlerLogin)
+	c.Register("register", handlerRegister)
+	c.Register("reset", handlerReset)
 }
