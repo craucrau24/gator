@@ -92,3 +92,37 @@ func handlerAgg(s *State, cmd Command) error {
 	fmt.Println(rss)
 	return nil
 }
+
+func handlerAddfeed(s *State, cmd Command) error {
+	if len(cmd.Args) != 2 {
+		return fmt.Errorf("%s command needs two argument: feed name, url", cmd.Cmd)
+	}
+
+	ctx := context.Background()
+
+	name := cmd.Args[0]
+	url := cmd.Args[1]
+
+	user, err := s.DB.GetUser(ctx, s.Config.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+
+	feed, err := s.DB.CreateFeed(ctx, database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: now,
+		UpdatedAt: now,
+		Name:      name,
+		Url:       url,
+		UserID:    user.ID,
+	})
+
+	if err != nil {
+		return err
+	}
+	fmt.Printf("feed `%v` created!\n", feed)
+
+	return nil
+}
