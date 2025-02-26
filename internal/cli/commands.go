@@ -28,8 +28,8 @@ func (c *Commands) Init() {
 	c.Register("reset", handlerReset)
 	c.Register("users", handlerUsers)
 	c.Register("agg", handlerAgg)
-	c.Register("addfeed", handlerAddfeed)
+	c.Register("addfeed", middleWareLoggedIn(handlerAddfeed))
 	c.Register("feeds", handlerFeeds)
-	c.Register("follow", handlerFollow)
-	c.Register("following", handlerFollowing)
+	c.Register("follow", middleWareLoggedIn(handlerFollow))
+	c.Register("following", middleWareLoggedIn(handlerFollowing))
 }
