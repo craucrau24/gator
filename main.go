@@ -25,7 +25,7 @@ func main() {
 	}
 	dbQueries := database.New(db)
 
-	state := cli.State{Config: &cfgData, DB: dbQueries}
+	state := config.State{Config: &cfgData, DB: dbQueries}
 	cmds := cli.NewCommands()
 	cmds.Init()
 

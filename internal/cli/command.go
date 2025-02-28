@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/craucrau24/gator/internal/config"
 	"github.com/craucrau24/gator/internal/database"
 	"github.com/craucrau24/gator/internal/rss"
 	"github.com/google/uuid"
@@ -15,7 +16,7 @@ type Command struct {
 	Args []string
 }
 
-func handlerLogin(s *State, cmd Command) error {
+func handlerLogin(s *config.State, cmd Command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("%s command needs one argument: user name", cmd.Cmd)
 	}
@@ -34,7 +35,7 @@ func handlerLogin(s *State, cmd Command) error {
 	return nil
 }
 
-func handlerRegister(s *State, cmd Command) error {
+func handlerRegister(s *config.State, cmd Command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("%s command needs one argument: user name", cmd.Cmd)
 	}
@@ -60,7 +61,7 @@ func handlerRegister(s *State, cmd Command) error {
 
 }
 
-func handlerUsers(s *State, cmd Command) error {
+func handlerUsers(s *config.State, cmd Command) error {
 	users, err := s.DB.GetUsers(context.Background())
 	if err != nil {
 		return nil
@@ -75,7 +76,7 @@ func handlerUsers(s *State, cmd Command) error {
 	return nil
 }
 
-func handlerReset(s *State, cmd Command) error {
+func handlerReset(s *config.State, cmd Command) error {
 	err := s.DB.Reset(context.Background())
 	if err != nil {
 		return err
@@ -83,17 +84,23 @@ func handlerReset(s *State, cmd Command) error {
 	return nil
 }
 
-func handlerAgg(s *State, cmd Command) error {
-	url := "https://www.wagslane.dev/index.xml"
-	rss, err := rss.FetchFeed(context.Background(), url)
-	if err != nil {
-		return nil
+func handlerAgg(s *config.State, cmd Command) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("%s command needs one argument: time between requests", cmd.Cmd)
 	}
-	fmt.Println(rss)
-	return nil
+	delta, err := time.ParseDuration(cmd.Args[0])
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Collecting feeds every %v\n", delta)
+	ticker := time.NewTicker(delta)
+	for ; ; <-ticker.C {
+		rss.ScrapeFeeds(s)
+	}
 }
 
-func handlerAddfeed(s *State, cmd Command, user database.User) error {
+func handlerAddfeed(s *config.State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("%s command needs two argument: feed name, url", cmd.Cmd)
 	}
@@ -134,7 +141,7 @@ func handlerAddfeed(s *State, cmd Command, user database.User) error {
 	return nil
 }
 
-func handlerFeeds(s *State, cmd Command) error {
+func handlerFeeds(s *config.State, cmd Command) error {
 	feeds, err := s.DB.GetFeeds(context.Background())
 	if err != nil {
 		return err
@@ -146,7 +153,7 @@ func handlerFeeds(s *State, cmd Command) error {
 	return nil
 }
 
-func handlerFollow(s *State, cmd Command, user database.User) error {
+func handlerFollow(s *config.State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("%s command needs one argument: url", cmd.Cmd)
 	}
@@ -171,7 +178,7 @@ func handlerFollow(s *State, cmd Command, user database.User) error {
 	return nil
 }
 
-func handlerFollowing(s *State, cmd Command, user database.User) error {
+func handlerFollowing(s *config.State, cmd Command, user database.User) error {
 	follows, err := s.DB.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return err

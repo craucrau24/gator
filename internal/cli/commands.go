@@ -1,20 +1,24 @@
 package cli
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/craucrau24/gator/internal/config"
+)
 
 type Commands struct {
-	handlers map[string]func(*State, Command) error
+	handlers map[string]func(*config.State, Command) error
 }
 
 func NewCommands() Commands {
-	return Commands{handlers: make(map[string]func(*State, Command) error)}
+	return Commands{handlers: make(map[string]func(*config.State, Command) error)}
 }
 
-func (c *Commands) Register(cmd string, handler func(*State, Command) error) {
+func (c *Commands) Register(cmd string, handler func(*config.State, Command) error) {
 	c.handlers[cmd] = handler
 }
 
-func (c *Commands) Run(state *State, cmd Command) error {
+func (c *Commands) Run(state *config.State, cmd Command) error {
 	fnc, ok := c.handlers[cmd.Cmd]
 	if !ok {
 		return fmt.Errorf("%s command not found", cmd.Cmd)
