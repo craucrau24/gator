@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/craucrau24/gator/internal/config"
@@ -187,6 +188,34 @@ func handlerFollowing(s *config.State, cmd Command, user database.User) error {
 	fmt.Printf("%s follows:\n", user.Name)
 	for _, follow := range follows {
 		fmt.Printf("'%s' (%s)\n", follow.Feedname, follow.Username)
+	}
+	return nil
+}
+
+func handlerBrowse(s *config.State, cmd Command, user database.User) error {
+	var limit int32
+	limit = 10
+	if len(cmd.Args) == 1 {
+		l, err := strconv.ParseInt(cmd.Args[0], 10, 32)
+		if err != nil {
+			return fmt.Errorf("limit must be a strictly positive integer")
+		}
+		if l <= 0 {
+			return fmt.Errorf("limit must be a strictly positive integer")
+		}
+		limit = int32(l)
+	}
+
+	posts, err := s.DB.GetPostsForUser(context.Background(), database.GetPostsForUserParams{
+		UserID: user.ID,
+		Limit:  limit,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, post := range posts {
+		fmt.Printf("'%s' (%s)\n", post.Title, post.Url)
 	}
 	return nil
 }

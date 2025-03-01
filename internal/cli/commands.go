@@ -36,4 +36,5 @@ func (c *Commands) Init() {
 	c.Register("feeds", handlerFeeds)
 	c.Register("follow", middleWareLoggedIn(handlerFollow))
 	c.Register("following", middleWareLoggedIn(handlerFollowing))
+	c.Register("browse", middleWareLoggedIn(handlerBrowse))
 }
