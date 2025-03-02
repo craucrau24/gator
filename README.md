@@ -38,5 +38,5 @@ list of commands (non exhaustive):
 - `register <username>`: create user with given name and login with newly created user
 - `login <username`: login with given username. User must have been previously created with `register` command
 - `reset`: clean database. Deletes all users and associated data
-....
+- ....
 
